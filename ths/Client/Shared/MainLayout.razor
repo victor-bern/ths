@@ -1,0 +1,14 @@
+﻿@using ths.Client.Shared.Components
+@using ths.Client.Shared.Components.NavMenu
+@inherits LayoutComponentBase
+
+<div class="page">
+    <NavMenu />
+
+    <main class="main">
+            @Body
+    </main>
+</div>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />

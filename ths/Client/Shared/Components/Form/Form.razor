@@ -1,0 +1,72 @@
+﻿@using Microsoft.Extensions.Logging;
+@using System.Text.Json;
+@using System.Text;
+@using ths.Shared.Entities;
+@inject HttpClient HttpClient;
+@inject NavigationManager NavigationManager;
+
+<container>
+    <provider-form>
+        <EditForm Model="Provider" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <input-item>
+                <MudTextField Label="Razão Social" id="razao-social" @bind-Value="Provider.CorporateName" />
+                <ValidationMessage For=@(() => Provider.CorporateName) />
+            </input-item>
+            <input-item>
+                <MudTextField Mask="@(new PatternMask("00.000.000/0000-00"))" Label="CNPJ"
+                              @bind-Value="Provider.Document" Variant="@Variant.Text" Clearable />
+                <ValidationMessage For=@(() => Provider.Document) />
+            </input-item>
+            <input-item>
+                <MudItem>
+                    <MudTextField Mask="@(new PatternMask("(00) 0000-0000"))" Label="Telefone"
+                                  @bind-Value="Provider.Phone" Variant="@Variant.Text" Clearable />
+                    <ValidationMessage For=@(() => Provider.Phone) />
+                </MudItem>
+            </input-item>
+            <input-item>
+                <MudTextField Label="Endereço" id="endereco" @bind-Value="Provider.Address" />
+                <ValidationMessage For=@(() => Provider.Address) />
+            </input-item>
+            <button-container>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">@ButtonTitle</MudButton>
+            </button-container>
+        </EditForm>
+    </provider-form>
+</container>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Provider Provider { get; set; } = new();
+    private string ButtonTitle { get; set; } = "Criar";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Id != 0)
+        {
+            Provider = await HttpClient.GetFromJsonAsync<Provider>($"api/providers/{Id}");
+            ButtonTitle = "Editar";
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        HttpResponseMessage result = new();
+
+        if(Id != 0)
+        {
+            var jsonBody = JsonSerializer.Serialize(Provider);
+            var contentString = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            result = await HttpClient.PutAsync($"/api/providers/{Id}", contentString);
+            if (result.IsSuccessStatusCode) NavigationManager.NavigateTo("/");
+        } else
+        {
+            var jsonBody = JsonSerializer.Serialize(Provider);
+            var contentString = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            result = await HttpClient.PostAsync("/api/providers", contentString);
+        }
+        if (result.IsSuccessStatusCode) NavigationManager.NavigateTo("/");
+    }
+
+}

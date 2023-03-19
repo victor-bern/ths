@@ -1,0 +1,59 @@
+﻿@page "/"
+@using System.Net.Http.Json
+@using ths.Shared.Entities;
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+
+<button-container>
+    <MudButton Variant="Variant.Filled" Class="ma-4 pa-3" Color="Color.Primary" OnClick="@NavigateToCreate">Adicionar Fornecedor</MudButton>
+</button-container>
+
+<MudDataGrid @bind-Value="@Providers" Items="@Providers">
+    <Columns>
+        <PropertyColumn  Property="x => x.Id" Title="Id" />
+        <PropertyColumn Property="x => x.CorporateName" Title="Razão Social" />
+        <PropertyColumn Property="x => x.Document" Title="CNPJ" />
+        <PropertyColumn Property="x => x.Phone" Title="Telefone" />
+        <PropertyColumn Property="x => x.Address" Title="Endereço" />
+        <TemplateColumn Title="Ações">
+            <CellTemplate>
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="(e => NavigateToEdit(context.Item.Id))" />
+                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="@Color.Error" OnClick="(e => HandleDeleteItem(context.Item.Id))" />
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+@code {
+    private IEnumerable<Provider> Providers = new List<Provider>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Providers = await HttpClient.GetFromJsonAsync<List<Provider>>("api/providers");
+    }
+
+    private async Task HandleDeleteItem(int id)
+    {
+        var parameters = new DialogParameters();
+        var result = await DialogService.Show<DeleteDialog>("Deseja deletar esse fornecedor?", parameters).Result;
+        if (!result.Canceled)
+        {
+            await HttpClient.DeleteAsync($"/api/providers/{id}");
+        }
+        Providers = await HttpClient.GetFromJsonAsync<List<Provider>>("api/providers");
+        this.StateHasChanged();
+    }
+
+
+    private void NavigateToEdit(int id)
+    {
+        NavigationManager.NavigateTo($"edit/{id}");
+    }
+
+    private void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo($"create");
+
+    }
+}

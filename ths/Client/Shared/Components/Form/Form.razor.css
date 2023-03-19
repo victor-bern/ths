@@ -1,0 +1,27 @@
+﻿container {
+    display: flex;
+    height: 85vh;
+    justify-content: center;
+}
+
+provider-form {
+    width: 350px;
+    height: 350px;
+    margin-top: 142px;
+    align-items: center;
+}
+
+input-item {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+}
+
+button-container {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+

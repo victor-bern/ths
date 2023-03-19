@@ -1,0 +1,14 @@
+﻿@page "/edit/{id:int}"
+@using System.Text.Json;
+@using System.Text;
+@using ths.Client.Shared.Components.Form;
+@inject HttpClient HttpClient;
+@inject NavigationManager NavigationManager;
+
+<PageTitle>Editar Fornecedor</PageTitle>
+<Form Id="@id"/>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+}
