@@ -1,5 +1,5 @@
 # ths
-Um projeto com blazor em .Net 6.0 utilizando Mysql
+Um projeto blazor com Server em .Net 6 utilizando Mysql
 
 ## Como fazer funcionar
 
